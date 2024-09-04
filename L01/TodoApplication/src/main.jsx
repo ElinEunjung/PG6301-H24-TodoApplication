@@ -2,74 +2,39 @@ import React, {useEffect, useState} from 'react';
 import {createRoot} from "react-dom/client";
 
 const root = createRoot(document.getElementById("root"));
-
-function NewTaskForm({onNewTask}) {
-
-    const [title, setTitle] = useState("");
+root.render(<TaskList/>);
+function TaskList() {
+    const [tasks, setTasks] = useState([
+        {id: 1, description: "Follow the lecture", completed: true},
+        {id: 2, description: "Read the exercise", completed: false},
+        {id: 3, description: "Complete the exercise", completed: false},
+    ]);
+    const [description, setDescription] = useState("");
 
     function handleSubmit(e) {
         e.preventDefault();
-        const task = {title};
-        onNewTask(task);
-        setTitle("");
+        setTasks(old => [...old, {description, completed: false}])
+        setDescription("")
     }
 
-    return <form onSubmit={handleSubmit}>
-        <div>
-            <label>
-                Title: <input
-                type="text"
-                value={title}
-                onChange={(e) => {
-                    setTitle(e.target.value);
-                }}
-            />
-            </label>
-        </div>
-        <button>Submit new task "{title}"</button>
-    </form>;
+    return <div>
+        <h2>Tasks</h2>
+        {tasks.map(({id, description, completed}) => <label key={id}>
+            <input type="checkbox" checked={completed} onChange={e => {
+                setTasks(old => old.map (
+                    task => task.id === id
+                ? ({...task, completed: e.target.checked})
+                : task
+            ))
+            }}/>
+            {description}
+        </label>)}
+        <form onSubmit={handleSubmit}>
+            <div>
+                Task description: <input value={description} onChange={e => setDescription(e.target.value)}/>
+            </div>
+            <div><button disabled={!description}>Add task</button></div>
+        </form>
+    </div>;
 }
 
-function TaskApplication() {
-    const [tasks, setTasks] = useState([])
-
-    async function loadTasks() {
-        const res = await fetch("/api/tasks");
-        if (res.ok) {
-            setTasks(await res.json());
-        } else {
-            console.log("Something went wrong");
-        }
-    }
-
-    useEffect(() => {
-        loadTasks();
-    }, [])
-
-    async function handleNewTask(task) {
-        await fetch("/api/tasks", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(task),
-        })
-        await loadTasks();
-    }
-
-    return <>
-        <h1>Here are the tasks we need to do!</h1>
-
-        {tasks.map((task) => (<div key={task.title}>
-            <label>
-                <input type={"checkbox"}/>
-                {task.title}
-            </label>
-        </div>))}
-
-        <NewTaskForm onNewTask={handleNewTask}/>
-
-    </>;
-}
-
-root.render(<TaskApplication/>);
