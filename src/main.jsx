@@ -5,7 +5,7 @@ const root = createRoot(document.getElementById("root"));
 root.render(<TaskList/>);
 function TaskList() {
     const [tasks, setTasks] = useState([
-        {id: 1, description: "Follow the lecture", completed: true},
+        {id: 1, description: "Follow the lecture!", completed: true},
         {id: 2, description: "Read the exercise", completed: false},
         {id: 3, description: "Complete the exercise", completed: false},
     ]);
