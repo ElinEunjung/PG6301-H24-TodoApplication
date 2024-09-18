@@ -4,19 +4,32 @@ import {createRoot} from "react-dom/client";
 const root = createRoot(document.getElementById("root"));
 root.render(<TaskList/>);
 function TaskList() {
-    const [tasks, setTasks] = useState([
-        {id: 1, description: "Follow the lecture", completed: true},
-        {id: 2, description: "Read the exercise", completed: false},
-        {id: 3, description: "Complete the exercise", completed: false},
-    ]);
-    const [description, setDescription] = useState("");
+    const [tasks, setTasks] = useState([]);
+    const [description,setDescription] = useState();
+
+
+    function loadTasks() {
+        setTasks([
+            {id: 1, description: "Follow the lecture", completed: true},
+            {id: 2, description: "Read the exercise", completed: false},
+            {id: 3, description: "Complete the exercise", completed: false},
+        ])
+        fetch("/api/tasks")
+            .then(res => res.json())
+            .then(tasks => setTasks(tasks));
+    }
+
+    useEffect(() => {
+        loadTasks();
+        },[]
+    )
+
 
     function handleSubmit(e) {
         e.preventDefault();
         setTasks(old => [...old, {description, completed: false}])
         setDescription("")
     }
-
     return <div>
         <h2>Tasks</h2>
         {tasks.map(({id, description, completed}) => <label key={id}>
@@ -37,4 +50,3 @@ function TaskList() {
         </form>
     </div>;
 }
-
