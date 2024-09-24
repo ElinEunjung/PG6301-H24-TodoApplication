@@ -9,11 +9,6 @@ function TaskList() {
 
 
     function loadTasks() {
-        setTasks([
-            {id: 1, description: "Follow the lecture", completed: true},
-            {id: 2, description: "Read the exercise", completed: false},
-            {id: 3, description: "Complete the exercise", completed: false},
-        ])
         fetch("/api/tasks")
             .then(res => res.json())
             .then(tasks => setTasks(tasks));
